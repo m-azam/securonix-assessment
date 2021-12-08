@@ -134,7 +134,7 @@ def plot_sub_category_average(category, attempt, username):
     fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
     fig.update_yaxes(range=list([0,100]))
     fig.update_traces(width=0.35)
-    fig.write_image("generated_graph/sub_cat_average_for_"+ category +".png")
+    fig.write_image("./generated_graph/sub_cat_average_for_"+ category +".png")
 
 def plot_question_score(category, attempt, username):
     labels = []
@@ -152,6 +152,4 @@ def plot_question_score(category, attempt, username):
     fig = go.Figure(data=[go.Bar(y=labels, x=values, text=values, orientation='h')])
     fig.update_xaxes(range=list([0,100]))
     fig.update_traces(width=0.99)
-    fig.write_image("generated_graph/question_scores_for_"+ category +".png")
-
-plot_category_average("Threat Hunting", 1, "azam")
+    fig.write_image("./generated_graph/question_scores_for_"+ category +".png")
