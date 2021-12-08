@@ -153,3 +153,5 @@ def plot_question_score(category, attempt, username):
     fig.update_xaxes(range=list([0,100]))
     fig.update_traces(width=0.99)
     fig.write_image("generated_graph/question_scores_for_"+ category +".png")
+
+plot_category_average("Threat Hunting", 1, "azam")
