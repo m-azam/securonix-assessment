@@ -64,3 +64,7 @@ async def login(request: dict = Body(...), username: str = Header(None), passwor
             db_cursor.execute("INSERT INTO Responses VALUES (?, ?, ?, ?)", (int(value), username, int(key), attempt))
             db_connection.commit()
         db_connection.close()
+
+def plot_graphs(attempt):
+    db_connection = sqlite3.connect('sqnx-db.db')
+    db_cursor = db_connection.cursor()
