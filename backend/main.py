@@ -13,7 +13,7 @@ app = FastAPI()
 
 app = FastAPI()
 
-origins = ["http://0.0.0.0:8900"]
+origins = ["http://0.0.0.0:8900", "http://18.117.121.50"]
  
 app.add_middleware(
     CORSMiddleware,
