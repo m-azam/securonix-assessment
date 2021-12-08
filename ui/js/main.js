@@ -91,7 +91,7 @@ function surveySubmit() {
 
     surveySubmissionRequest.addEventListener("readystatechange", function () {
         if (this.readyState === 4) {
-            alert(this.responseText);
+
         }
     });
 
@@ -100,7 +100,6 @@ function surveySubmit() {
     surveySubmissionRequest.setRequestHeader("Content-Type", "application/json");
     surveySubmissionRequest.setRequestHeader("username", sessionUsername);
     surveySubmissionRequest.setRequestHeader("password", sessionPassword);
-    surveySubmissionRequest.setRequestHeader("number_of_questions", numberOfQuestions);
     var data = JSON.stringify(inputData);
     surveySubmissionRequest.send(data);
 }

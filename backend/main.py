@@ -28,6 +28,7 @@ def is_valid_user(request_username, request_password):
     db_connection = sqlite3.connect('sqnx-db.db')
     db_cursor = db_connection.cursor()
     stored_hash = db_cursor.execute("SELECT password FROM User WHERE username = ?", [request_username]).fetchall()
+    db_connection.close()
     if (hashlib.sha256(request_password.encode('utf-8')).hexdigest() == stored_hash[0][0]):
         return True
     else:
@@ -47,17 +48,19 @@ async def fetch_questions(request: AuthRequest):
         db_connection.row_factory = sqlite3.Row
         db_cursor = db_connection.cursor()
         rows = db_cursor.execute("SELECT * FROM Questions").fetchall()
-        return json.dumps([dict(iterator) for iterator in rows])
-
-@app.post("/questions")
-async def fetch_questions(request: AuthRequest):
-    if (is_valid_user(request.username, request.password)):
-        db_connection = sqlite3.connect('sqnx-db.db')
-        db_connection.row_factory = sqlite3.Row
-        db_cursor = db_connection.cursor()
-        rows = db_cursor.execute("SELECT * FROM Questions").fetchall()
+        db_connection.close()
         return json.dumps([dict(iterator) for iterator in rows])
 
 @app.post("/submit")
-async def login(request: dict = Body(...), username: str = Header(None), password: str = Header(None), number_of_questions: int = Header(None)):
+async def login(request: dict = Body(...), username: str = Header(None), password: str = Header(None)):
     if (is_valid_user(username, password)):
+        db_connection = sqlite3.connect('sqnx-db.db')
+        db_cursor = db_connection.cursor()
+        attempt = 1
+        last_attempt = db_cursor.execute("SELECT MAX(surveyAttemptNumber) FROM Responses").fetchall()[0][0]
+        if (last_attempt is not None):
+            attempt = last_attempt + 1
+        for key, value in request.items():
+            db_cursor.execute("INSERT INTO Responses VALUES (?, ?, ?, ?)", (int(value), username, int(key), attempt))
+            db_connection.commit()
+        db_connection.close()
