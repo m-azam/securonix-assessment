@@ -24,10 +24,21 @@
             <div class="col-md-auto" id="questionContainer">
                 <button class="btn btn-primary margin" id="beginSurvey" onclick="beginSurvey();">Begin Survey</button>
             </div>
+            <div class="col-md-auto" id="resultsContainer" style="display: none;">
+                <h5 class="margin"> Threat Hunting</h5>
+                <img id="th_avg"/>
+                <img id="th_sub"/>
+                <img id="th_q"/>
+                <h5 class="margin">Vulnerability Management</h5>
+                <img id="vm_avg"/>
+                <img id="vm_sub"/>
+                <img id="vm_q"/>
+            </div>
         </div>
         <div class="row justify-content-md-center">
             <div class="col-md-auto">
                 <button class="btn btn-primary margin" style="display: none;" id="submiteSurvey" onclick="surveySubmit();">Submit</button>
+                <button class="btn btn-primary margin" style="display: none;" id="editSurvey" onclick="editSurvey();">Go back to edit</button>
             </div>
         </div>
     </div>

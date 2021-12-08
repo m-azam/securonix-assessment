@@ -55,7 +55,7 @@ async def fetch_questions(request: AuthRequest):
         return json.dumps([dict(iterator) for iterator in rows])
 
 @app.post("/submit")
-async def login(request: dict = Body(...), username: str = Header(None), password: str = Header(None)):
+async def submit_survey(request: dict = Body(...), username: str = Header(None), password: str = Header(None)):
     if (is_valid_user(username, password)):
         db_connection = sqlite3.connect('sqnx-db.db')
         db_cursor = db_connection.cursor()
@@ -67,19 +67,13 @@ async def login(request: dict = Body(...), username: str = Header(None), passwor
             db_cursor.execute("INSERT INTO Responses VALUES (?, ?, ?, ?)", (int(value), username, int(key), attempt))
             db_connection.commit()
         db_connection.close()
-
-def plot_category_average(attempt, username):
-    db_connection = sqlite3.connect('sqnx-db.db')
-    db_cursor = db_connection.cursor()
-    average = db_cursor.execute("SELECT AVG(questionResponse) FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?)", (username, attempt)).fetchall()[0][0]
-    db_connection.close()
-    labels = ['Overall Average']
-    values = [average]
-    fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
-    fig.update_yaxes(range=list([0,100]))
-    fig.update_traces(width=0.35)
-    fig.show()
-    fig.write_image("generated_graph/average_overall.png")
+        plot_category_average("Threat Hunting", attempt, username)
+        plot_category_average("Vulnerability Management", attempt, username)
+        plot_sub_category_average("Threat Hunting", attempt, username)
+        plot_sub_category_average("Vulnerability Management", attempt, username)
+        plot_question_score("Threat Hunting", attempt, username)
+        plot_question_score("Vulnerability Management", attempt, username)
+        return "Success"
 
 def get_question_id(category, subcategory = None):
     db_connection = sqlite3.connect('sqnx-db.db')
@@ -141,3 +135,21 @@ def plot_sub_category_average(category, attempt, username):
     fig.update_yaxes(range=list([0,100]))
     fig.update_traces(width=0.35)
     fig.write_image("generated_graph/sub_cat_average_for_"+ category +".png")
+
+def plot_question_score(category, attempt, username):
+    labels = []
+    values = []
+    db_connection = sqlite3.connect('sqnx-db.db')
+    db_cursor = db_connection.cursor()
+    questionIdList = get_question_id(category)
+    for q_id in questionIdList:
+        response = db_cursor.execute("SELECT questionResponse FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?) AND questionId = (?)", (username, attempt, q_id)).fetchall()
+        values.append(response[0][0])
+        quest = db_cursor.execute("SELECT questionText FROM Questions WHERE questionId = (?)", [q_id]).fetchall()
+        labels.append(quest[0][0])
+
+    db_connection.close()
+    fig = go.Figure(data=[go.Bar(y=labels, x=values, text=values, orientation='h')])
+    fig.update_xaxes(range=list([0,100]))
+    fig.update_traces(width=0.99)
+    fig.write_image("generated_graph/question_scores_for_"+ category +".png")

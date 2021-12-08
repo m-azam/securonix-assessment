@@ -91,10 +91,14 @@ function surveySubmit() {
 
     surveySubmissionRequest.addEventListener("readystatechange", function () {
         if (this.readyState === 4) {
-
+            var jsonData = JSON.parse(this.response);
+            if (jsonData == "Success") {
+                showResults();
+            } else {
+                alert("An error occurred");
+            }
         }
     });
-
 
     surveySubmissionRequest.open("POST", "http://0.0.0.0:8000/submit");
     surveySubmissionRequest.setRequestHeader("Content-Type", "application/json");
@@ -102,4 +106,32 @@ function surveySubmit() {
     surveySubmissionRequest.setRequestHeader("password", sessionPassword);
     var data = JSON.stringify(inputData);
     surveySubmissionRequest.send(data);
+}
+
+function showResults() {
+    window.scrollTo(0, 0);
+    document.getElementById("submiteSurvey").style.display = "none";
+    document.getElementById("questionContainer").style.display = "none";
+    document.getElementById("editSurvey").style.display = "block";
+    document.getElementById("resultsContainer").style.display = "block";
+    document.getElementById("th_avg").src ="/../backend/generated_graph/average_Threat Hunting.png";
+    document.getElementById("th_sub").src ="../backend/generated_graph/sub_cat_average_for_Threat Hunting.png";
+    document.getElementById("th_q").src ="../backend/generated_graph/question_scores_for_Threat Hunting.png";
+    document.getElementById("vm_avg").src ="../backend/generated_graph/average_Vulnerability Management.png";
+    document.getElementById("vm_sub").src ="../backend/generated_graph/sub_cat_average_for_Vulnerability Management.png";
+    document.getElementById("vm_q").src ="../backend/generated_graph/question_scores_for_Vulnerability Management.png";
+}
+
+function editSurvey() {
+    window.scrollTo(0, 0);
+    document.getElementById("submiteSurvey").style.display = "block";
+    document.getElementById("questionContainer").style.display = "block";
+    document.getElementById("editSurvey").style.display = "none";
+    document.getElementById("resultsContainer").style.display = "none";
+    document.getElementById("th_avg").src ="";
+    document.getElementById("th_sub").src ="";
+    document.getElementById("th_q").src ="";
+    document.getElementById("vm_avg").src ="";
+    document.getElementById("vm_sub").src ="";
+    document.getElementById("vm_q").src ="";
 }
