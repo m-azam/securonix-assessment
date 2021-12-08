@@ -21,27 +21,13 @@
             </div>
         </div>
         <div class="row justify-content-md-center">
-            <div class="col-md-auto">
-                
-                <div class="question-entry margin">
-                    <h6>Category</h6>
-                    <h3>Here is a commonly occuring question what is your reponse?</h3>
-                    <select class="form-control margin" id="answer">
-                        <option>0</option>
-                        <option>10</option>
-                        <option>15</option>
-                        <option>20</option>
-                        <option>25</option>
-                        <option>30</option>
-                        <option>35</option>
-                      </select>
-                </div>
-
+            <div class="col-md-auto" id="questionContainer">
+                <button class="btn btn-primary margin" id="beginSurvey" onclick="beginSurvey();">Begin Survey</button>
             </div>
         </div>
         <div class="row justify-content-md-center">
             <div class="col-md-auto">
-                <button class="btn btn-primary margin">Submit</button>
+                <button class="btn btn-primary margin" style="display: none;" id="submiteSurvey" onclick="surveySubmit();">Submit</button>
             </div>
         </div>
     </div>
@@ -49,6 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
         crossorigin="anonymous"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>

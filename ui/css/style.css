@@ -6,6 +6,10 @@
     margin: 20px;
 }
 
+.margin-bottom-big {
+    margin-bottom: 40px;
+}
+
 .bg-aliceblue {
     background-color: aliceblue;
 }
