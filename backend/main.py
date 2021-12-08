@@ -4,6 +4,9 @@ import hashlib
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import json
+import plotly.graph_objects as go
+import itertools
+import statistics
 
 app = FastAPI()
 
@@ -65,6 +68,76 @@ async def login(request: dict = Body(...), username: str = Header(None), passwor
             db_connection.commit()
         db_connection.close()
 
-def plot_graphs(attempt):
+def plot_category_average(attempt, username):
     db_connection = sqlite3.connect('sqnx-db.db')
     db_cursor = db_connection.cursor()
+    average = db_cursor.execute("SELECT AVG(questionResponse) FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?)", (username, attempt)).fetchall()[0][0]
+    db_connection.close()
+    labels = ['Overall Average']
+    values = [average]
+    fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
+    fig.update_yaxes(range=list([0,100]))
+    fig.update_traces(width=0.35)
+    fig.show()
+    fig.write_image("generated_graph/average_overall.png")
+
+def get_question_id(category, subcategory = None):
+    db_connection = sqlite3.connect('sqnx-db.db')
+    db_cursor = db_connection.cursor()
+    questionIdList = []
+    if (subcategory == None):
+        questionIdList = list(itertools.chain(*db_cursor.execute("SELECT questionId FROM Questions WHERE questionCategory = (?)", [category]).fetchall()))
+    else:
+        questionIdList = list(itertools.chain(*db_cursor.execute("SELECT questionId FROM Questions WHERE questionCategory = (?) AND questionSub = (?)", (category, subcategory)).fetchall()))
+    db_connection.close()
+    return questionIdList
+
+def plot_category_average(category, attempt, username):
+    db_connection = sqlite3.connect('sqnx-db.db')
+    db_cursor = db_connection.cursor()
+    questionIdList = get_question_id(category)
+    query = "SELECT questionResponse FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?) AND questionId IN ({sequence})".format(sequence=','.join(str(i) for i in questionIdList))
+    responses_tuple = db_cursor.execute(query, (username, attempt)).fetchall()
+    response_list = list(itertools.chain(*responses_tuple))
+    db_connection.close()
+    average = statistics.mean(response_list)
+    labels = [category]
+    values = [round(average,2)]
+    fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
+    fig.update_yaxes(range=list([0,100]))
+    fig.update_traces(width=0.35)
+    fig.write_image("generated_graph/average_"+ category +".png")
+
+def plot_sub_category_average(category, attempt, username):
+    labels = []
+    values = []
+    db_connection = sqlite3.connect('sqnx-db.db')
+    db_cursor = db_connection.cursor()
+    questionIdList = get_question_id(category, "Define")
+    query = "SELECT questionResponse FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?) AND questionId IN ({sequence})".format(sequence=','.join(str(i) for i in questionIdList))
+    responses_tuple = db_cursor.execute(query, (username, attempt)).fetchall()
+    response_list = list(itertools.chain(*responses_tuple))
+    average = statistics.mean(response_list)
+    labels.append("Define")
+    values.append(round(average,2))
+
+    questionIdList = get_question_id(category, "Manage")
+    query = "SELECT questionResponse FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?) AND questionId IN ({sequence})".format(sequence=','.join(str(i) for i in questionIdList))
+    responses_tuple = db_cursor.execute(query, (username, attempt)).fetchall()
+    response_list = list(itertools.chain(*responses_tuple))
+    average = statistics.mean(response_list)
+    labels.append("Manage")
+    values.append(round(average,2))
+
+    questionIdList = get_question_id(category, "Use")
+    query = "SELECT questionResponse FROM Responses WHERE username = (?) AND surveyAttemptNumber = (?) AND questionId IN ({sequence})".format(sequence=','.join(str(i) for i in questionIdList))
+    responses_tuple = db_cursor.execute(query, (username, attempt)).fetchall()
+    response_list = list(itertools.chain(*responses_tuple))
+    average = statistics.mean(response_list)
+    labels.append("Use")
+    values.append(round(average,2))
+
+    fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
+    fig.update_yaxes(range=list([0,100]))
+    fig.update_traces(width=0.35)
+    fig.write_image("generated_graph/sub_cat_average_for_"+ category +".png")
