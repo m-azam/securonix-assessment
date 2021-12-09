@@ -1,4 +1,4 @@
-var host = "http://18.117.121.50"
+var host = "http://18.117.121.50:8000"
 
 function onLogin() {
     var loginRequest = new XMLHttpRequest();
