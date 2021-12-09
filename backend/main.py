@@ -7,6 +7,8 @@ import json
 import plotly.graph_objects as go
 import itertools
 import statistics
+import plotly
+import base64
 
 
 app = FastAPI(debug=True)
@@ -66,13 +68,12 @@ async def submit_survey(request: dict = Body(...), username: str = Header(None),
             db_connection.commit()
         db_connection.close()
         print("starting to write")
-        plot_category_average("Threat Hunting", attempt, username)
-        plot_category_average("Vulnerability Management", attempt, username)
+        # plot_category_average("Vulnerability Management", attempt, username)
         plot_sub_category_average("Threat Hunting", attempt, username)
         plot_sub_category_average("Vulnerability Management", attempt, username)
         plot_question_score("Threat Hunting", attempt, username)
         plot_question_score("Vulnerability Management", attempt, username)
-        return "Success"
+        return plot_category_average("Threat Hunting", attempt, username)
 
 def get_question_id(category, subcategory = None):
     db_connection = sqlite3.connect('sqnx-db.db')
@@ -100,7 +101,9 @@ def plot_category_average(category, attempt, username):
     fig.update_yaxes(range=list([0,100]))
     fig.update_traces(width=0.35)
     print("writing now")
-    fig.write_image("./generated_graph/average_"+ category +".png")
+    png = plotly.io.to_image(fig)
+    png_base64 = base64.b64encode(png).decode('ascii')
+    return str(png_base64)
 
 def plot_sub_category_average(category, attempt, username):
     labels = []
