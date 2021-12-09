@@ -8,8 +8,6 @@ import plotly.graph_objects as go
 import itertools
 import statistics
 
-app = FastAPI()
-
 
 app = FastAPI()
 
@@ -102,7 +100,7 @@ def plot_category_average(category, attempt, username):
     fig.update_yaxes(range=list([0,100]))
     fig.update_traces(width=0.35)
     print("writing now")
-    fig.write_image("./generated_graph/average_.png")
+    fig.write_image("average_"+ category +".png")
 
 def plot_sub_category_average(category, attempt, username):
     labels = []
