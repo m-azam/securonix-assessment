@@ -18,7 +18,7 @@ function onLogin() {
         }
     });
 
-    loginRequest.open("POST", "http://0.0.0.0:8000/login");
+    loginRequest.open("POST", "http://0.0.0.0:8900/login");
     loginRequest.setRequestHeader("Content-Type", "application/json");
     loginRequest.setRequestHeader("username", inputUsername);
     loginRequest.setRequestHeader("password", inputPassword);
