@@ -67,6 +67,7 @@ async def submit_survey(request: dict = Body(...), username: str = Header(None),
             db_cursor.execute("INSERT INTO Responses VALUES (?, ?, ?, ?)", (int(value), username, int(key), attempt))
             db_connection.commit()
         db_connection.close()
+        print("starting to write")
         plot_category_average("Threat Hunting", attempt, username)
         plot_category_average("Vulnerability Management", attempt, username)
         plot_sub_category_average("Threat Hunting", attempt, username)
@@ -100,6 +101,7 @@ def plot_category_average(category, attempt, username):
     fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
     fig.update_yaxes(range=list([0,100]))
     fig.update_traces(width=0.35)
+    print("writing now")
     fig.write_image("./generated_graph/average_.png")
 
 def plot_sub_category_average(category, attempt, username):
