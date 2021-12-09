@@ -110,12 +110,9 @@ function showResults(jsonData) {
     document.getElementById("questionContainer").style.display = "none";
     document.getElementById("editSurvey").style.display = "block";
     document.getElementById("resultsContainer").style.display = "block";
-    document.getElementById("th_avg").src = "data:image/png;base64," + jsonData;
-//     document.getElementById("th_sub").src ="../backend/generated_graph/sub_cat_average_for_Threat Hunting.png";
-//     document.getElementById("th_q").src ="../backend/generated_graph/question_scores_for_Threat Hunting.png";
-//     document.getElementById("vm_avg").src ="../backend/generated_graph/average_Vulnerability Management.png";
-//     document.getElementById("vm_sub").src ="../backend/generated_graph/sub_cat_average_for_Vulnerability Management.png";
-//     document.getElementById("vm_q").src ="../backend/generated_graph/question_scores_for_Vulnerability Management.png";
+    for (var key in jsonData) {
+        document.getElementById(key).src = "data:image/png;base64," + jsonData[key];
+    }
 }
 
 function editSurvey() {

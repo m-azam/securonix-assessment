@@ -68,12 +68,13 @@ async def submit_survey(request: dict = Body(...), username: str = Header(None),
             db_connection.commit()
         db_connection.close()
         print("starting to write")
-        # plot_category_average("Vulnerability Management", attempt, username)
-        plot_sub_category_average("Threat Hunting", attempt, username)
-        plot_sub_category_average("Vulnerability Management", attempt, username)
-        plot_question_score("Threat Hunting", attempt, username)
-        plot_question_score("Vulnerability Management", attempt, username)
-        return plot_category_average("Threat Hunting", attempt, username)
+        th_avg = plot_category_average("Threat Hunting", attempt, username)
+        vm_avg = plot_category_average("Vulnerability Management", attempt, username)
+        th_sub = plot_sub_category_average("Threat Hunting", attempt, username)
+        vm_sub = plot_sub_category_average("Vulnerability Management", attempt, username)
+        th_q = plot_question_score("Threat Hunting", attempt, username)
+        vm_q = plot_question_score("Vulnerability Management", attempt, username)
+        return {"th_avg": th_avg, "th_sub": th_sub, "th_q": th_q , "vm_avg": vm_avg, "vm_sub": vm_sub, "vm_q": vm_q}
 
 def get_question_id(category, subcategory = None):
     db_connection = sqlite3.connect('sqnx-db.db')
@@ -137,7 +138,9 @@ def plot_sub_category_average(category, attempt, username):
     fig = go.Figure(data=[go.Bar(x=labels, y=values, text=values)])
     fig.update_yaxes(range=list([0,100]))
     fig.update_traces(width=0.35)
-    fig.write_image("./generated_graph/sub_cat_average_for_"+ category +".png")
+    png = plotly.io.to_image(fig)
+    png_base64 = base64.b64encode(png).decode('ascii')
+    return str(png_base64)
 
 def plot_question_score(category, attempt, username):
     labels = []
@@ -155,4 +158,6 @@ def plot_question_score(category, attempt, username):
     fig = go.Figure(data=[go.Bar(y=labels, x=values, text=values, orientation='h')])
     fig.update_xaxes(range=list([0,100]))
     fig.update_traces(width=0.99)
-    fig.write_image("./generated_graph/question_scores_for_"+ category +".png")
+    png = plotly.io.to_image(fig)
+    png_base64 = base64.b64encode(png).decode('ascii')
+    return str(png_base64)
