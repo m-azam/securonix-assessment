@@ -1,3 +1,5 @@
+var host = "http://18.117.121.50"
+
 function onLogin() {
     var loginRequest = new XMLHttpRequest();
     var inputUsername = document.getElementById("username").value;
@@ -18,7 +20,7 @@ function onLogin() {
         }
     });
 
-    loginRequest.open("POST", "http://0.0.0.0:8900/login");
+    loginRequest.open("POST", host + "/login");
     loginRequest.setRequestHeader("Content-Type", "application/json");
     loginRequest.setRequestHeader("username", inputUsername);
     loginRequest.setRequestHeader("password", inputPassword);
@@ -72,7 +74,7 @@ function beginSurvey() {
         }
     });
 
-    questionRequest.open("POST", "http://0.0.0.0:8000/questions");
+    questionRequest.open("POST", host + "/questions");
     questionRequest.setRequestHeader("Content-Type", "application/json");
     var data = JSON.stringify({ username: sessionUsername, password: sessionPassword });
     questionRequest.send(data);
@@ -96,7 +98,7 @@ function surveySubmit() {
         }
     });
 
-    surveySubmissionRequest.open("POST", "http://0.0.0.0:8000/submit");
+    surveySubmissionRequest.open("POST", host + "/submit");
     surveySubmissionRequest.setRequestHeader("Content-Type", "application/json");
     surveySubmissionRequest.setRequestHeader("username", sessionUsername);
     surveySubmissionRequest.setRequestHeader("password", sessionPassword);
